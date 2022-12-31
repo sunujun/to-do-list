@@ -40,3 +40,16 @@ export const getCalendarColumns = (now: string | number | Date | dayjs.Dayjs | n
     const filledColumns = fillEmptyColumns(columns, start, end);
     return filledColumns;
 };
+
+/**
+ * @param day 0 - 6
+ * @return 일 - 월
+ */
+const dayTexts = ['일', '월', '화', '수', '목', '금', '토'];
+export const getDayText = (day: number) => {
+    return dayTexts[day];
+};
+
+export const getDayColor = (day: number) => {
+    return day === 0 ? '#e67639' : day === 6 ? '#5872d1' : '#2b2b2b';
+};
