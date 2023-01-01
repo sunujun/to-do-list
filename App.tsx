@@ -34,7 +34,8 @@ const App = () => {
         handleConfirm,
         onPressArrow,
     } = useCalendar(now);
-    const { toDoList, input, setInput, addToDo, removeToDo, toggleToDo, resetInput } = useToDoList(selectedDate);
+    const { filteredToDoList, input, setInput, addToDo, removeToDo, toggleToDo, resetInput } =
+        useToDoList(selectedDate);
     const columns = getCalendarColumns(selectedDate);
     const flatListRef = useRef<FlatList>(null);
 
@@ -131,7 +132,7 @@ const App = () => {
                     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
                         <FlatList
                             ref={flatListRef}
-                            data={toDoList}
+                            data={filteredToDoList}
                             ListHeaderComponent={ListHeaderComponent}
                             renderItem={renderItem}
                             contentContainerStyle={{ paddingTop: 30 }}
