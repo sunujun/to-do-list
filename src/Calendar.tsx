@@ -100,7 +100,7 @@ const Calendar = ({
             onPressDate(date);
         };
         const isSelected = dayjs(date).isSame(selectedDate, 'date');
-        const hasToDo = toDoList.find(toDo => toDo.date.isSame(date, 'date')) !== undefined;
+        const hasToDo = toDoList.find(toDo => dayjs(toDo.date).isSame(dayjs(date), 'date')) !== undefined;
 
         return (
             <Column

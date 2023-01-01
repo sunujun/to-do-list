@@ -38,8 +38,8 @@ export const getCalendarColumns = (now: string | number | Date | dayjs.Dayjs | n
         const date = dayjs(start).add(i, 'day');
         columns.push(date);
     }
-
     const filledColumns = fillEmptyColumns(columns, start, end);
+
     return filledColumns;
 };
 
