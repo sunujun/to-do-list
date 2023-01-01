@@ -54,6 +54,7 @@ export const useToDoList = (selectedDate: dayjs.Dayjs) => {
     });
 
     return {
+        toDoList,
         filteredToDoList,
         input,
         setInput,

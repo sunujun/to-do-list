@@ -3,6 +3,7 @@ import { FlatList, GestureResponderEvent, Text, TouchableOpacity, View } from 'r
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import dayjs from 'dayjs';
 import { getDayColor, getDayText } from './util';
+import { ToDoList } from './hooks/useToDoList';
 
 const columnSize = 30;
 
@@ -13,6 +14,7 @@ const Column = ({
     disabled,
     onPress,
     isSelected,
+    hasToDo,
 }: {
     text: number | string;
     color: string;
@@ -20,6 +22,7 @@ const Column = ({
     disabled?: boolean;
     onPress?: (event: GestureResponderEvent) => void;
     isSelected?: boolean;
+    hasToDo?: boolean;
 }) => {
     return (
         <TouchableOpacity
@@ -33,7 +36,7 @@ const Column = ({
                 backgroundColor: isSelected ? '#C2C2C2' : 'transparent',
                 borderRadius: columnSize / 2,
             }}>
-            <Text style={{ color, opacity }}>{text}</Text>
+            <Text style={{ color, opacity, fontWeight: hasToDo ? 'bold' : 'normal' }}>{text}</Text>
         </TouchableOpacity>
     );
 };
@@ -52,12 +55,14 @@ const Calendar = ({
     onPressArrow,
     onPressHeaderDate,
     onPressDate,
+    toDoList,
 }: {
     columns: dayjs.Dayjs[];
     selectedDate: dayjs.Dayjs;
     onPressArrow: (direction: 'left' | 'right') => void;
     onPressHeaderDate: () => void;
     onPressDate: (date: dayjs.Dayjs) => void;
+    toDoList: ToDoList[];
 }) => {
     const ListHeaderComponent = () => {
         const currentDateText = dayjs(selectedDate).format('YYYY.MM.DD.');
@@ -95,6 +100,7 @@ const Calendar = ({
             onPressDate(date);
         };
         const isSelected = dayjs(date).isSame(selectedDate, 'date');
+        const hasToDo = toDoList.find(toDo => toDo.date.isSame(date, 'date')) !== undefined;
 
         return (
             <Column
@@ -103,6 +109,7 @@ const Calendar = ({
                 opacity={isCurrentMonth ? 1 : 0.4}
                 onPress={onPress}
                 isSelected={isSelected}
+                hasToDo={hasToDo}
             />
         );
     };

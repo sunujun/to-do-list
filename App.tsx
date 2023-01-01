@@ -34,7 +34,7 @@ const App = () => {
         handleConfirm,
         onPressArrow,
     } = useCalendar(now);
-    const { filteredToDoList, input, setInput, addToDo, removeToDo, toggleToDo, resetInput } =
+    const { toDoList, filteredToDoList, input, setInput, addToDo, removeToDo, toggleToDo, resetInput } =
         useToDoList(selectedDate);
     const columns = getCalendarColumns(selectedDate);
     const flatListRef = useRef<FlatList>(null);
@@ -64,6 +64,7 @@ const App = () => {
     const ListHeaderComponent = () => (
         <View>
             <Calendar
+                toDoList={toDoList}
                 columns={columns}
                 selectedDate={selectedDate}
                 onPressArrow={onPressArrow}
