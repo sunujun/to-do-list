@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FlatList, GestureResponderEvent, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
@@ -7,11 +7,35 @@ import { getCalendarColumns, getDayColor, getDayText } from './src/util';
 
 const columnSize = 30;
 
-const Column = ({ text, color, opacity }: { text: number | string; color: string; opacity: number }) => {
+const Column = ({
+    text,
+    color,
+    opacity,
+    disabled,
+    onPress,
+    isSelected,
+}: {
+    text: number | string;
+    color: string;
+    opacity: number;
+    disabled?: boolean;
+    onPress?: (event: GestureResponderEvent) => void;
+    isSelected?: boolean;
+}) => {
     return (
-        <View style={{ width: columnSize, height: columnSize, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ color, opacity }}>{text} </Text>
-        </View>
+        <TouchableOpacity
+            disabled={disabled}
+            onPress={onPress}
+            style={{
+                width: columnSize,
+                height: columnSize,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: isSelected ? '#C2C2C2' : 'transparent',
+                borderRadius: columnSize / 2,
+            }}>
+            <Text style={{ color, opacity }}>{text}</Text>
+        </TouchableOpacity>
     );
 };
 
@@ -25,9 +49,12 @@ const ArrowButton = ({ iconName, onPress }: { iconName: string; onPress?: (event
 
 const App = () => {
     const now = dayjs();
-    const columns = getCalendarColumns(now);
+
+    const [selectedDate, setSelectedDate] = useState(now);
+    const columns = getCalendarColumns(selectedDate);
+
     const ListHeaderComponent = () => {
-        const currentDateText = dayjs(now).format('YYYY.MM.DD.');
+        const currentDateText = dayjs(selectedDate).format('YYYY.MM.DD.');
         return (
             <View>
                 {/* YYYY.MM.DD. */}
@@ -43,7 +70,9 @@ const App = () => {
                     {[0, 1, 2, 3, 4, 5, 6].map(day => {
                         const dayText = getDayText(day);
                         const color = getDayColor(day);
-                        return <Column key={`day-${dayText}`} text={dayText} color={color} opacity={1} />;
+                        return (
+                            <Column key={`day-${dayText}`} text={dayText} color={color} opacity={1} disabled={true} />
+                        );
                     })}
                 </View>
             </View>
@@ -54,9 +83,21 @@ const App = () => {
         const dateText = dayjs(date).get('date');
         const day = dayjs(date).get('day');
         const color = getDayColor(day);
-        const isCurrentMonth = dayjs(date).isSame(now, 'month');
+        const isCurrentMonth = dayjs(date).isSame(selectedDate, 'month');
+        const onPress = () => {
+            setSelectedDate(date);
+        };
+        const isSelected = dayjs(date).isSame(selectedDate, 'date');
 
-        return <Column text={dateText} color={color} opacity={isCurrentMonth ? 1 : 0.4} />;
+        return (
+            <Column
+                text={dateText}
+                color={color}
+                opacity={isCurrentMonth ? 1 : 0.4}
+                onPress={onPress}
+                isSelected={isSelected}
+            />
+        );
     };
 
     return (
