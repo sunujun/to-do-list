@@ -8,11 +8,15 @@ const AddToDoInput = ({
     onChangeText,
     placeholder,
     onPressAdd,
+    onSubmitEditing,
+    onFocus,
 }: {
     value: string;
     onChangeText: React.Dispatch<React.SetStateAction<string>>;
     placeholder: string;
     onPressAdd: () => void;
+    onSubmitEditing: () => void;
+    onFocus: () => void;
 }) => {
     return (
         <View style={{ width: ITEM_WIDTH, flexDirection: 'row', alignItems: 'center', alignSelf: 'center' }}>
@@ -21,6 +25,9 @@ const AddToDoInput = ({
                 onChangeText={onChangeText}
                 placeholder={placeholder}
                 style={{ flex: 1, padding: 5, color: '#595959' }}
+                onSubmitEditing={onSubmitEditing}
+                blurOnSubmit={false}
+                onFocus={onFocus}
             />
             <TouchableOpacity onPress={onPressAdd} style={{ padding: 5 }}>
                 <AntDesign name="plus" size={18} color="#595959" />

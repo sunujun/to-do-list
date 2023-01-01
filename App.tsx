@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
+    Alert,
     FlatList,
     Image,
     Keyboard,
@@ -33,14 +34,31 @@ const App = () => {
         handleConfirm,
         onPressArrow,
     } = useCalendar(now);
-    const { toDoList, input, setInput } = useToDoList(selectedDate);
+    const { toDoList, input, setInput, addToDo, removeToDo, toggleToDo, resetInput } = useToDoList(selectedDate);
     const columns = getCalendarColumns(selectedDate);
+    const flatListRef = useRef<FlatList>(null);
 
     const onPressDate = (date: dayjs.Dayjs) => {
         setSelectedDate(date);
     };
-
-    const onPressAdd = () => {};
+    const scrollToEnd = () => {
+        setTimeout(() => {
+            flatListRef.current?.scrollToEnd({ animated: true });
+        }, 300);
+    };
+    const onPressAdd = () => {
+        addToDo();
+        resetInput();
+        scrollToEnd();
+    };
+    const onSubmitEditing = () => {
+        addToDo();
+        resetInput();
+        scrollToEnd();
+    };
+    const onFocus = () => {
+        scrollToEnd();
+    };
 
     const ListHeaderComponent = () => (
         <View>
@@ -59,9 +77,26 @@ const App = () => {
 
     const renderItem = ({ item: toDo }: { item: ToDoList }) => {
         const isSuccess = toDo.isSuccess;
+        const onPress = () => {
+            toggleToDo(toDo.id);
+        };
+        const onLongPress = () => {
+            Alert.alert('삭제하시겠어요?', '', [
+                {
+                    style: 'cancel',
+                    text: '아니요',
+                },
+                {
+                    text: '네',
+                    onPress: () => removeToDo(toDo.id),
+                },
+            ]);
+        };
 
         return (
-            <View
+            <Pressable
+                onPress={onPress}
+                onLongPress={onLongPress}
                 style={{
                     width: ITEM_WIDTH,
                     alignSelf: 'center',
@@ -73,7 +108,7 @@ const App = () => {
                 }}>
                 <Text style={{ flex: 1, fontSize: 14, color: '#595959' }}>{toDo.content}</Text>
                 <Ionicons name="ios-checkmark" size={17} color={isSuccess ? '#595959' : '#BFBFBF'} />
-            </View>
+            </Pressable>
         );
     };
 
@@ -94,12 +129,21 @@ const App = () => {
                 <SafeAreaView style={styles.container}>
                     <StatusBar translucent={true} backgroundColor="transparent" barStyle="dark-content" />
                     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-                        <FlatList data={toDoList} ListHeaderComponent={ListHeaderComponent} renderItem={renderItem} />
+                        <FlatList
+                            ref={flatListRef}
+                            data={toDoList}
+                            ListHeaderComponent={ListHeaderComponent}
+                            renderItem={renderItem}
+                            contentContainerStyle={{ paddingTop: 30 }}
+                            showsVerticalScrollIndicator={false}
+                        />
                         <AddToDoInput
                             value={input}
                             onChangeText={setInput}
                             placeholder={`${dayjs(selectedDate).format('MM.DD')}에 추가할 ToDo`}
                             onPressAdd={onPressAdd}
+                            onSubmitEditing={onSubmitEditing}
+                            onFocus={onFocus}
                         />
                     </KeyboardAvoidingView>
                     <DateTimePickerModal
