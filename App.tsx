@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FlatList, GestureResponderEvent, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import dayjs from 'dayjs';
 import { getCalendarColumns, getDayColor, getDayText } from './src/util';
+import { useCalendar } from './src/hooks/useCalendar';
 
 const columnSize = 30;
 
@@ -51,29 +52,16 @@ const ArrowButton = ({ iconName, onPress }: { iconName: string; onPress?: (event
 const App = () => {
     const now = dayjs();
 
-    const [selectedDate, setSelectedDate] = useState(now);
+    const {
+        selectedDate,
+        setSelectedDate,
+        isDatePickerVisible,
+        showDatePicker,
+        hideDatePicker,
+        handleConfirm,
+        onPressArrow,
+    } = useCalendar(now);
     const columns = getCalendarColumns(selectedDate);
-
-    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-
-    const showDatePicker = () => {
-        setDatePickerVisibility(true);
-    };
-
-    const hideDatePicker = () => {
-        setDatePickerVisibility(false);
-    };
-
-    const handleConfirm = (date: Date) => {
-        setSelectedDate(dayjs(date));
-        hideDatePicker();
-    };
-
-    const onPressArrow = (direction: 'left' | 'right') => {
-        const newSelectedDate =
-            direction === 'left' ? dayjs(selectedDate).subtract(1, 'month') : dayjs(selectedDate).add(1, 'month');
-        setSelectedDate(newSelectedDate);
-    };
 
     const ListHeaderComponent = () => {
         const currentDateText = dayjs(selectedDate).format('YYYY.MM.DD.');
